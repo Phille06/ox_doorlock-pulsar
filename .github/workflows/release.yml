@@ -28,11 +28,9 @@ jobs:
 
       - name: Bundle files
         run: |
-          mkdir -p ./temp/ox_doorlock/web
-          cp ./{LICENSE,README.md,fxmanifest.lua,config.lua,types.lua} ./temp/ox_doorlock
-          cp -r ./{client,server,locales,audio} ./temp/ox_doorlock
-          cp -r ./web/build ./temp/ox_doorlock/web/
-          cd ./temp && zip -r ../ox_doorlock.zip ./ox_doorlock
+          mkdir -p staging/ox_doorlock
+          rsync -a --exclude='.github' --exclude='node_modules' --exclude='staging' . staging/ox_doorlock/
+          cd staging && zip -r ../ox_doorlock.zip ox_doorlock/
 
       - name: Create release
         uses: softprops/action-gh-release@v2
