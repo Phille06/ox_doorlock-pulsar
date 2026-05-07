@@ -182,9 +182,9 @@ SetTimeout(0, function()
 end)
 
 function RemoveItem(playerId, item, slot)
-	local player = GetPlayer(playerId)
-
-	if player then ox_inventory:RemoveItem(playerId, item, 1, nil, slot) end
+	local char = exports['pulsar-characters']:FetchCharacterSource(playerId)
+	local sid = char and char:GetData('SID')
+	if sid then exports['ox_inventory']:Remove(sid, 1, item, 1) end
 end
 
 ---@param player table
@@ -201,7 +201,11 @@ function DoesPlayerHaveItem(player, items, removeItem)
 
 		if data and data.count > 0 then
 			if removeItem or item.remove then
-				ox_inventory:RemoveItem(playerId, itemName, 1, nil, data.slot)
+				local char = exports['pulsar-characters']:FetchCharacterSource(playerId)
+				local sid = char and char:GetData('SID')
+				if sid then
+					exports['ox_inventory']:Remove(sid, 1, itemName, 1)
+				end
 			end
 
 			return itemName
@@ -226,7 +230,7 @@ local function isAuthorised(playerId, door, lockpick)
 
 	if player then
 		if lockpick then
-			return DoesPlayerHaveItem(player, Config.LockpickItems)
+			return DoesPlayerHaveItem(player, Config.LockpickItems, true)
 		end
 
 		if door.characters and table.contains(door.characters, GetCharacterId(player)) then
